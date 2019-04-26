@@ -60,6 +60,70 @@ namespace NebOsc.Test
             }
         }
 
+        public class OSC_PackUnpack : TestSuite
+        {
+            public override void RunSuite()
+            {
+                Packet pkt = new Packet();
+
+                List<byte> bytes = new List<byte>();
+                bool ok = false;
+                int start = -1;
+
+                // pack
+                bytes = pkt.Pack("Abe*-88= XXXq");
+                UT_EQUAL(bytes.Count, 16);
+                // unpack
+                string sval = "";
+                start = 0;
+                ok = pkt.Unpack(bytes.ToArray(), ref start, ref sval);
+                UT_TRUE(ok);
+                UT_EQUAL(sval, "Abe*-88= XXXq");
+
+                // pack
+                bytes = pkt.Pack(193082);
+                UT_EQUAL(bytes.Count, 4);
+                // unpack
+                int ival = 0;
+                start = 0;
+                ok = pkt.Unpack(bytes.ToArray(), ref start, ref ival);
+                UT_TRUE(ok);
+                UT_EQUAL(ival, 193082);
+
+                // pack
+                bytes = pkt.Pack(7340912L);
+                UT_EQUAL(bytes.Count, 8);
+                // unpack
+                ulong uval = 0;
+                start = 0;
+                ok = pkt.Unpack(bytes.ToArray(), ref start, ref uval);
+                UT_TRUE(ok);
+                UT_EQUAL(uval, (ulong)7340912);
+
+                // pack
+                bytes = pkt.Pack(2965.8345f);
+                UT_EQUAL(bytes.Count, 4);
+                // unpack
+                float fval = 0;
+                start = 0;
+                ok = pkt.Unpack(bytes.ToArray(), ref start, ref fval);
+                UT_TRUE(ok);
+                UT_EQUAL(fval, 2965.8345f);
+
+                // pack
+                bytes = pkt.Pack(new List<byte>() { 11, 28, 205, 68, 137, 251, 59, 71, 184 });
+                UT_EQUAL(bytes.Count, 16);
+                // unpack
+                List<byte> bval = new List<byte>();
+                start = 0;
+                ok = pkt.Unpack(bytes.ToArray(), ref start, ref bval);
+                UT_TRUE(ok);
+                UT_EQUAL(bval.Count, 9);
+                UT_EQUAL(bval[3], 68);
+                UT_EQUAL(bval[8], 184);
+            }
+        }
+
         public class OSC_Message : TestSuite
         {
             public override void RunSuite()
@@ -99,7 +163,7 @@ namespace NebOsc.Test
             }
         }
 
-        public class OSC_Bundle : TestSuite
+        public class OSC_Bundle : TestSuite // TODO more
         {
             public override void RunSuite()
             {
@@ -136,13 +200,17 @@ namespace NebOsc.Test
                 Message m1 = new Message() { Address = "/foo/bar/" };
                 m1.Data.Add(82828);
                 m1.Data.Add(new List<byte>() { 22, 44, 77, 0, 211 });
-                m1.Data.Add("abracadabra");
                 m1.Data.Add(199.44);
-
-                nin.Start();
-
+                m1.Data.Add("Snafu boss-man");
                 ok = nout.Send(m1);
                 UT_TRUE(ok);
+
+                // Wait a bit.
+                System.Threading.Thread.Sleep(500);
+
+                // What happened.
+                UT_EQUAL(logs.Count, 0);
+                logs.ForEach(l => UT_INFO(l));
                 UT_EQUAL(rxMsgs.Count, 1);
             }
         }

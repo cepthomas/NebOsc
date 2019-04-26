@@ -210,7 +210,8 @@ namespace NebOsc
 
             if (ok)
             {
-                val.AddRange(msg.Subset(4, blen));
+                val.AddRange(msg.Subset(start, blen));
+                start += blen;
             }
 
             // Remove pad.

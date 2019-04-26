@@ -121,7 +121,7 @@ namespace NebOsc
                 }
                 else
                 {
-                    Errors.Add("Invalid address string");
+                    Errors.Add("Invalid address");
                 }
 
                 // Parse data types.
@@ -134,12 +134,13 @@ namespace NebOsc
                     }
                     else
                     {
-                        Errors.Add("Invalid data types string");
+                        Errors.Add("Invalid data types");
                     }
                 }
 
-                // Parse data values.
-                for (int i = 1; i < dtypes.Length && Errors.Count == 0; i++)
+                // Parse data values. Trim comma.
+                dtypes = dtypes.Remove(0, 1);
+                for (int i = 0; i < dtypes.Length && Errors.Count == 0; i++)
                 {
                     switch (dtypes[i])
                     {
@@ -151,7 +152,7 @@ namespace NebOsc
                             }
                             else
                             {
-                                Errors.Add($"Invalid data value at: {i}");
+                                Errors.Add($"Invalid int value at index {i}");
                             }
                             break;
 
@@ -163,7 +164,7 @@ namespace NebOsc
                             }
                             else
                             {
-                                Errors.Add($"Invalid data value at: {i}");
+                                Errors.Add($"Invalid float value at index {i}");
                             }
                             break;
 
@@ -175,7 +176,7 @@ namespace NebOsc
                             }
                             else
                             {
-                                Errors.Add($"Invalid data value at: {i}");
+                                Errors.Add($"Invalid string value at index {i}");
                             }
                             break;
 
@@ -187,7 +188,7 @@ namespace NebOsc
                             }
                             else
                             {
-                                Errors.Add($"Invalid data value at: {i}");
+                                Errors.Add($"Invalid byte[] value at index {i}");
                             }
                             break;
 
@@ -218,7 +219,7 @@ namespace NebOsc
             {
                 if (d is List<byte>)
                 {
-                    sb.Append($"bytes:{(d as List<byte>).Count},");
+                    sb.Append($"byte[{(d as List<byte>).Count}],");
                 }
                 else
                 {

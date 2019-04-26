@@ -45,6 +45,9 @@ namespace NebOsc
 
         /// <summary>Where to?</summary>
         public int RemotePort { get; set; } = -1;
+
+        /// <summary>Trace other than errors.</summary>
+        public bool Trace { get; set; } = false;
         #endregion
 
         #region Lifecycle
@@ -144,7 +147,10 @@ namespace NebOsc
         /// <param name="msg"></param>
         void LogMsg(LogCategory cat, string msg)
         {
-            LogEvent?.Invoke(this, new LogEventArgs() { DeviceLogCategory = cat, Message = msg });
+            if(cat != LogCategory.Send || Trace)
+            {
+                LogEvent?.Invoke(this, new LogEventArgs() { DeviceLogCategory = cat, Message = "OSCOUT " + msg });
+            }
         }
         #endregion
     }

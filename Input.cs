@@ -29,10 +29,10 @@ namespace NebOsc
         #endregion
 
         #region Events
-        /// <summary>Request for logging service.</summary>
+        /// <summary>Request for logging service. May need Invoke() if client is UI.</summary>
         public event EventHandler<LogEventArgs> LogEvent;
 
-        /// <summary>Reporting a change to listeners.</summary>
+        /// <summary>Reporting a change to listeners. May need Invoke() if client is UI.</summary>
         public event EventHandler<InputEventArgs> InputEvent;
         #endregion
 
@@ -42,6 +42,9 @@ namespace NebOsc
 
         /// <summary>The receive port.</summary>
         public int LocalPort { get; set; } = -1;
+
+        /// <summary>Trace other than errors.</summary>
+        public bool Trace { get; set; } = false;
         #endregion
 
         #region Lifecycle
@@ -62,8 +65,8 @@ namespace NebOsc
                     _udpClient = null;
                 }
 
-                //_udpClient = new UdpClient(LocalPort);
                 _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, LocalPort));
+                _udpClient.BeginReceive(new AsyncCallback(ReceiveCallback), this);
 
                 inited = true;
                 DeviceName = $"OSCIN:{LocalPort}";
@@ -103,30 +106,12 @@ namespace NebOsc
         }
         #endregion
 
-        #region Public functions
-        /// <summary>
-        /// Start listening.
-        /// </summary>
-        public void Start()
-        {
-            _udpClient.BeginReceive(new AsyncCallback(Receive), this);
-        }
-
-        /// <summary>
-        /// Stop listening.
-        /// </summary>
-        public void Stop()
-        {
-            _udpClient.Close();
-        }
-        #endregion
-
         #region Private functions
         /// <summary>
         /// Handle a received message.
         /// </summary>
         /// <param name="ar"></param>
-        void Receive(IAsyncResult ar)
+        void ReceiveCallback(IAsyncResult ar)
         {
             IPEndPoint sender = new IPEndPoint(IPAddress.Any, LocalPort);
 
@@ -153,9 +138,11 @@ namespace NebOsc
                 else
                 {
                     Message m = new Message();
-                    if(m.Unpack(bytes))
+
+                    if (m.Unpack(bytes))
                     {
                         args.Messages.Add(m);
+                        LogMsg(LogCategory.Recv, m.ToString());
                     }
                     else
                     {
@@ -167,7 +154,7 @@ namespace NebOsc
             }
 
             // Listen again.
-            _udpClient.BeginReceive(new AsyncCallback(Receive), this);
+            _udpClient.BeginReceive(new AsyncCallback(ReceiveCallback), this);
         }
 
         /// <summary>Ask host to do something with this.</summary>
@@ -175,7 +162,10 @@ namespace NebOsc
         /// <param name="msg"></param>
         void LogMsg(LogCategory cat, string msg)
         {
-            LogEvent?.Invoke(this, new LogEventArgs() { DeviceLogCategory = cat, Message = msg });
+            if (cat != LogCategory.Recv || Trace)
+            {
+                LogEvent?.Invoke(this, new LogEventArgs() { DeviceLogCategory = cat, Message = "OSCIN " + msg });
+            }
         }
         #endregion
     }
