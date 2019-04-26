@@ -26,7 +26,7 @@ namespace NebOsc
         #endregion
 
         #region Properties
-        /// <summary>The timetag.</summary>
+        /// <summary>The OSC timetag.</summary>
         public TimeTag TimeTag { get; set; } = new TimeTag();
 
         /// <summary>Contained messages.</summary>
@@ -40,7 +40,7 @@ namespace NebOsc
         /// <summary>
         /// Format to binary form.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The byte array or null if error occurred.</returns>
         public List<byte> Pack()
         {
             List<byte> bytes = new List<byte>();
@@ -67,21 +67,18 @@ namespace NebOsc
             catch (Exception ex)
             {
                 Errors.Add($"Exception while packing bundle: {ex.Message}");
-                bytes = null;
             }
 
-            return bytes;
+            return Errors.Count == 0 ? bytes : null;
         }
 
         /// <summary>
-        /// Factory function.
+        /// Parser function.
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
         public bool Unpack(byte[] bytes)
         {
-            bool ok = true;
-
             try
             {
                 int index = 0;
@@ -90,73 +87,66 @@ namespace NebOsc
 
                 // Parse marker.
                 string marker = null;
-                if (ok)
+                if (Unpack(bytes, ref index, ref marker))
                 {
-                    ok = Unpack(bytes, ref index, ref marker);
+                    if (marker != BUNDLE_ID)
+                    {
+                        Errors.Add("Invalid marker string");
+                    }
                 }
-                if (ok)
-                {
-                    ok = marker == BUNDLE_ID;
-                }
-                if (!ok)
+                else
                 {
                     Errors.Add("Invalid marker string");
                 }
 
                 // Parse timetag.
                 ulong tt = 0;
-                if (ok)
-                {
-                    ok = Unpack(bytes, ref index, ref tt);
-                }
-                if (ok)
+                if (Unpack(bytes, ref index, ref tt))
                 {
                     TimeTag = new TimeTag(tt);
+                }
+                else
+                {
+                    Errors.Add("Invalid timetag");
                 }
 
                 // Parse bundles and messages.
                 List<Bundle> bundles = new List<Bundle>();
 
-                if (ok)
+                while (index < bytes.Count() && Errors.Count == 0)
                 {
-                    while (index < bytes.Count() && ok)
+                    if (bytes[index] == '#') // bundle?
                     {
-                        if (bytes[index] == '#') // bundle?
+                        Bundle b = new Bundle();
+                        if (b.Unpack(bytes))
                         {
-                            Bundle b = new Bundle();
-                            if (b.Unpack(bytes))
-                            {
-                                bundles.Add(b);
-                            }
-                            else
-                            {
-                                ok = false;
-                                Errors.Add("Couldn't unpack the bundle");
-                            }
+                            bundles.Add(b);
                         }
-                        else // message?
+                        else
                         {
-                            Message m = new Message();
-                            if (m.Unpack(bytes))
-                            {
-                                Messages.Add(m);
-                            }
-                            else
-                            {
-                                ok = false;
-                                Errors.Add("Couldn't unpack the bundle");
-                            }
+                            Errors.Add("Couldn't unpack bundle");
+                        }
+                    }
+                    else // message?
+                    {
+                        Message m = new Message();
+                        if (m.Unpack(bytes))
+                        {
+                            Messages.Add(m);
+                        }
+                        else
+                        {
+                            Errors.Add("Couldn't unpack message");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                ok = false;
                 Errors.Add($"Exception while unpacking bundle: {ex.Message}");
             }
 
-            return ok;
+            return Errors.Count == 0;
         }
         #endregion
     }

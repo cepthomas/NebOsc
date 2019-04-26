@@ -20,10 +20,10 @@ namespace NebOsc
     public class Message : Packet
     {
         #region Properties
-        /// <summary>Storage of address.</summary>
+        /// <summary>The OSC address.</summary>
         public string Address { get; set; } = null;
 
-        /// <summary>Data elements in the message.</summary>
+        /// <summary>OSC data elements in the message.</summary>
         public List<object> Data { get; private set; } = new List<object>();
 
         /// <summary>Parse errors.</summary>
@@ -32,13 +32,13 @@ namespace NebOsc
 
         #region Public functions
         /// <summary>
-        /// Client request to format the message.
+        /// Format to binary form.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The byte array or null if error occurred.</returns>
         public List<byte> Pack()
         {
-            bool ok = true;
             List<byte> bytes = new List<byte>();
+            Errors.Clear();
 
             try
             {
@@ -79,12 +79,11 @@ namespace NebOsc
 
                         default:
                             Errors.Add($"Unknown type: {d.GetType()}");
-                            ok = false;
                             break;
                     }
                 });
 
-                if (ok)
+                if (Errors.Count == 0)
                 {
                     // Put it all together.
                     bytes.AddRange(Pack(Address));
@@ -92,30 +91,22 @@ namespace NebOsc
                     bytes.AddRange(Pack(dtype.ToString()));
                     bytes.AddRange(dvals);
                 }
-                else
-                {
-                    bytes = null;
-                }
-
             }
             catch (Exception ex)
             {
                 Errors.Add($"Exception while packing message: {ex.Message}");
-                bytes = null;
             }
 
-            return bytes;
+            return Errors.Count == 0 ? bytes : null;
         }
 
         /// <summary>
-        /// Factory parser function.
+        /// Parser function.
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
         public bool Unpack(byte[] bytes)
         {
-            bool ok = true;
-
             try
             {
                 int index = 0;
@@ -124,11 +115,7 @@ namespace NebOsc
 
                 // Parse address.
                 string address = null;
-                if (ok)
-                {
-                    ok = Unpack(bytes, ref index, ref address);
-                }
-                if (ok)
+                if(Unpack(bytes, ref index, ref address))
                 {
                     Address = address;
                 }
@@ -138,74 +125,84 @@ namespace NebOsc
                 }
 
                 // Parse data types.
-                string dtypes = null;
-                if (ok)
+                string dtypes = "";
+                if(Unpack(bytes, ref index, ref dtypes))
                 {
-                    ok = Unpack(bytes, ref index, ref dtypes);
-                }
-                if (ok)
-                {
-                    ok = (dtypes.Length >= 1) && (dtypes[0] == ',');
+                    if((dtypes.Length >= 1) && (dtypes[0] == ','))
+                    {
+
+                    }
+                    else
+                    {
+                        Errors.Add("Invalid data types string");
+                    }
                 }
 
                 // Parse data values.
-                if (ok)
+                for (int i = 1; i < dtypes.Length && Errors.Count == 0; i++)
                 {
-                    for (int i = 1; i < dtypes.Length && ok; i++)
+                    switch (dtypes[i])
                     {
-                        switch (dtypes[i])
-                        {
-                            case 'i':
-                                int di = 0;
-                                ok = Unpack(bytes, ref index, ref di);
-                                if (ok)
-                                {
-                                    Data.Add(di);
-                                }
-                                break;
+                        case 'i':
+                            int di = 0;
+                            if (Unpack(bytes, ref index, ref di))
+                            {
+                                Data.Add(di);
+                            }
+                            else
+                            {
+                                Errors.Add($"Invalid data value at: {i}");
+                            }
+                            break;
 
-                            case 'f':
-                                float df = 0;
-                                ok = Unpack(bytes, ref index, ref df);
-                                if (ok)
-                                {
-                                    Data.Add(df);
-                                }
-                                break;
+                        case 'f':
+                            float df = 0;
+                            if(Unpack(bytes, ref index, ref df))
+                            {
+                                Data.Add(df);
+                            }
+                            else
+                            {
+                                Errors.Add($"Invalid data value at: {i}");
+                            }
+                            break;
 
-                            case 's':
-                                string ds = "";
-                                ok = Unpack(bytes, ref index, ref ds);
-                                if (ok)
-                                {
-                                    Data.Add(ds);
-                                }
-                                break;
+                        case 's':
+                            string ds = "";
+                            if(Unpack(bytes, ref index, ref ds))
+                            {
+                                Data.Add(ds);
+                            }
+                            else
+                            {
+                                Errors.Add($"Invalid data value at: {i}");
+                            }
+                            break;
 
-                            case 'b':
-                                List<byte> db = new List<byte>();
-                                ok = Unpack(bytes, ref index, ref db);
-                                if (ok)
-                                {
-                                    Data.Add(db);
-                                }
-                                break;
+                        case 'b':
+                            List<byte> db = new List<byte>();
+                            if(Unpack(bytes, ref index, ref db))
+                            {
+                                Data.Add(db);
+                            }
+                            else
+                            {
+                                Errors.Add($"Invalid data value at: {i}");
+                            }
+                            break;
 
-                            default:
-                                ok = false;
-                                Errors.Add($"Invalid data type: {dtypes[i]}");
-                                break;
-                        }
+                        default:
+                            Errors.Add($"Invalid data type: {dtypes[i]}");
+                            break;
                     }
                 }
             }
             catch (Exception ex)
             {
                 Errors.Add($"Exception while unpacking message: {ex.Message}");
-                ok = false;
             }
 
-            return ok;
+            return Errors.Count == 0;
         }
 
         /// <summary>
@@ -217,7 +214,17 @@ namespace NebOsc
             StringBuilder sb = new StringBuilder();
             sb.Append($"Address:{Address} Data:");
 
-            Data.ForEach(o => sb.Append(o.ToString() + " ")); // TODO print bytes better.
+            Data.ForEach(d =>
+            {
+                if (d is List<byte>)
+                {
+                    sb.Append($"bytes:{(d as List<byte>).Count},");
+                }
+                else
+                {
+                    sb.Append(d.ToString() + ",");
+                }
+            });
 
             return sb.ToString();
         }

@@ -16,7 +16,6 @@ namespace NebOsc.Test
             TestRunner runner = new TestRunner(OutputFormat.Readable);
             string[] cases = new string[] { "OSC" };
             runner.RunSuites(cases);
-
         }
 
         public class OSC_TimeTag : TestSuite
@@ -112,7 +111,7 @@ namespace NebOsc.Test
             }
         }
 
-        public class OSC_Run : TestSuite
+        public class OSC_SendAndReceive : TestSuite
         {
             public override void RunSuite()
             {
@@ -120,13 +119,12 @@ namespace NebOsc.Test
 
                 List<string> logs = new List<string>();
 
-                Input nin = new Input() { Port = 9700 };
-                Output nout = new Output() { Port = 9701, IP = "127.0.0.1" };
+                Input nin = new Input() { LocalPort = 9700 };
+                Output nout = new Output() { RemotePort = 9700, RemoteIP = "127.0.0.1" };
 
                 nin.InputEvent += (_, e) => rxMsgs.AddRange(e.Messages);
                 nin.LogEvent += (_, e) => logs.Add(e.Message);
                 nout.LogEvent += (_, e) => logs.Add(e.Message);
-
 
                 bool ok = nin.Init();
                 UT_TRUE(ok);
@@ -141,8 +139,11 @@ namespace NebOsc.Test
                 m1.Data.Add("abracadabra");
                 m1.Data.Add(199.44);
 
+                nin.Start();
+
                 ok = nout.Send(m1);
                 UT_TRUE(ok);
+                UT_EQUAL(rxMsgs.Count, 1);
             }
         }
     }

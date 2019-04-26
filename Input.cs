@@ -40,19 +40,13 @@ namespace NebOsc
         /// <summary>Name.</summary>
         public string DeviceName { get; private set; } = "Invalid";
 
-        /// <summary>The local port.</summary>
-        public int Port { get; set; } = -1;
+        /// <summary>The receive port.</summary>
+        public int LocalPort { get; set; } = -1;
         #endregion
 
         #region Lifecycle
         /// <summary>
-        /// Constructor.
-        /// </summary>
-        public Input()
-        {
-        }
-
-        /// <summary>
+        /// Set up listening for OSC messages.
         /// </summary>
         /// <returns></returns>
         public bool Init()
@@ -68,9 +62,11 @@ namespace NebOsc
                     _udpClient = null;
                 }
 
-                _udpClient = new UdpClient(Port);
+                //_udpClient = new UdpClient(LocalPort);
+                _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, LocalPort));
+
                 inited = true;
-                DeviceName = $"OSCIN:{Port}";
+                DeviceName = $"OSCIN:{LocalPort}";
             }
             catch (Exception ex)
             {
@@ -109,7 +105,7 @@ namespace NebOsc
 
         #region Public functions
         /// <summary>
-        /// 
+        /// Start listening.
         /// </summary>
         public void Start()
         {
@@ -117,7 +113,7 @@ namespace NebOsc
         }
 
         /// <summary>
-        /// 
+        /// Stop listening.
         /// </summary>
         public void Stop()
         {
@@ -129,13 +125,13 @@ namespace NebOsc
         /// <summary>
         /// Handle a received message.
         /// </summary>
-        /// <param name="ares"></param>
-        void Receive(IAsyncResult ares)
+        /// <param name="ar"></param>
+        void Receive(IAsyncResult ar)
         {
-            IPEndPoint sender = new IPEndPoint(0, 0);
+            IPEndPoint sender = new IPEndPoint(IPAddress.Any, LocalPort);
 
             // Process input.
-            byte[] bytes = _udpClient.EndReceive(ares, ref sender);
+            byte[] bytes = _udpClient.EndReceive(ar, ref sender);
 
             if (InputEvent != null && bytes != null && bytes.Length > 0)
             {

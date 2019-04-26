@@ -21,7 +21,7 @@ namespace NebOsc
         public List<Message> Messages { get; set; } = new List<Message>();
     }
 
-    /// <summary>OSC wants to say something.</summary>
+    /// <summary>OSC wants to send something.</summary>
     public class LogEventArgs : EventArgs
     {
         /// <summary>Category.</summary>
@@ -31,24 +31,14 @@ namespace NebOsc
         public string Message { get; set; } = null;
     }
 
-
-
     /// <summary>Category types.</summary>
     public enum LogCategory { Info, Send, Recv, Error }
 
-
-
     /// <summary>
-    /// Bunch of utilities for formatting and parsing. Not documented because they are self-explanatory.
+    /// Bunch of utilities for formatting and parsing.
     /// </summary>
-    public static class Common
+    public static class Utils
     {
-        public const int MAX_NOTE = 127;
-
-
-
-
-
         #region Utilities
         /// <summary>
         /// Add 0s to make multiple of 4.
@@ -87,6 +77,11 @@ namespace NebOsc
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Test for readable char.
+        /// </summary>
+        /// <param name="b"></param>
+        /// <returns>True/false</returns>
         public static bool IsReadable(byte b)
         {
             return b >= 32 && b <= 126;

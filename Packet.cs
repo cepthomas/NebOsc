@@ -15,11 +15,11 @@ using NBagOfTricks;
 namespace NebOsc
 {
     /// <summary>
-    /// Bunch of utilities for formatting and parsing. Not documented because they are self-explanatory.
+    /// Base class for OSC elements.
     /// </summary>
     public class Packet
     {
-        #region Typed converters to binary
+        #region Typed converters to/from binary. Not documented because they are self-explanatory
         public List<byte> Pack(string value)
         {
             List<byte> bytes = new List<byte>();
@@ -58,15 +58,12 @@ namespace NebOsc
             bytes.Pad(); // pad to 4x bytes
             return bytes;
         }
-        #endregion
 
-        #region Typed converters from binary
         public bool Unpack(byte[] msg, ref int start, ref string val)
         {
             bool ok = true;
 
-            // 0=start 1=collecting-chars 2=looking-for-end 3=done
-            int state = 0;
+            int state = 0; // 0=start 1=collecting-chars 2=looking-for-end 3=done
             int index = start;
             StringBuilder sb = new StringBuilder();
 
@@ -75,7 +72,7 @@ namespace NebOsc
                 switch (state)
                 {
                     case 0:
-                        if(Common.IsReadable(msg[index]))
+                        if(Utils.IsReadable(msg[index]))
                         {
                             sb.Append((char)msg[index]);
                             index++;
@@ -88,7 +85,7 @@ namespace NebOsc
                         break;
 
                     case 1:
-                        if (Common.IsReadable(msg[index]))
+                        if (Utils.IsReadable(msg[index]))
                         {
                             sb.Append((char)msg[index]);
                             index++;

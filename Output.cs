@@ -25,7 +25,7 @@ namespace NebOsc
         UdpClient _udpClient;
 
         /// <summary>Access synchronizer.</summary>
-        object _lock = new object();
+        readonly object _lock = new object();
 
         /// <summary>Resource clean up.</summary>
         bool _disposed = false;
@@ -41,28 +41,19 @@ namespace NebOsc
         public string DeviceName { get; private set; } = "Invalid";
 
         /// <summary>Where to?</summary>
-        public string IP { get; set; } = "Invalid";
+        public string RemoteIP { get; set; } = "Invalid";
 
         /// <summary>Where to?</summary>
-        public int Port { get; set; } = -1;
+        public int RemotePort { get; set; } = -1;
         #endregion
 
         #region Lifecycle
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public Output()
-        {
-        }
-
         /// <summary>
         /// </summary>
         /// <returns></returns>
         public bool Init()
         {
             bool inited = false;
-
-            DeviceName = "Invalid"; // default
 
             try
             {
@@ -73,9 +64,9 @@ namespace NebOsc
                     _udpClient = null;
                 }
 
-                _udpClient = new UdpClient(IP, Port);
+                _udpClient = new UdpClient(RemoteIP, RemotePort);
                 inited = true;
-                DeviceName = $"OSCOUT:{IP}:{Port}";
+                DeviceName = $"OSCOUT:{RemoteIP}:{RemotePort}";
             }
             catch (Exception ex)
             {
@@ -132,19 +123,12 @@ namespace NebOsc
                     List<byte> bytes = msg.Pack();
                     if (bytes != null)
                     {
-                        if (msg.Errors.Count == 0)
-                        {
-                            _udpClient.Send(bytes.ToArray(), bytes.Count);
-                            LogMsg(LogCategory.Send, msg.ToString());
-                        }
-                        else
-                        {
-                            msg.Errors.ForEach(e => LogMsg(LogCategory.Error, e));
-                        }
+                        int num = _udpClient.Send(bytes.ToArray(), bytes.Count);
+                        LogMsg(LogCategory.Send, msg.ToString());
                     }
                     else
                     {
-                        LogMsg(LogCategory.Error, msg.ToString());
+                        msg.Errors.ForEach(e => LogMsg(LogCategory.Error, e));
                         ok = false;
                     }
                 }

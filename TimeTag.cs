@@ -15,20 +15,21 @@ using System.Drawing;
 namespace NebOsc
 {
     /// <summary>
-    /// Time tags are represented by a 64 bit fixed point number. The first 32 bits specify the number of seconds since midnight
-    /// on January 1, 1900, and the last 32 bits specify fractional parts of a second to a precision of about 200 picoseconds.
-    /// This is the representation used by Internet NTP timestamps.
+    /// Representation of an OSC timetag. For doc see README.md.
     /// </summary>
     public class TimeTag
     {
         #region Constants
         /// <summary>DateTime at OSC epoch 1900-01-01 00:00:00.000.</summary>
         static readonly DateTime EPOCH_DT = new DateTime(1900, 1, 1, 0, 0, 0, 0);
+
+        /// <summary>The special case meaning "immediately."</summary>
+        static readonly ulong IMMEDIATELY = 0x0000000000000001;
         #endregion
 
         #region Properties
-        /// <summary>Default is the special case meaning "immediately."</summary>
-        public ulong Raw { get; private set; } = 0x0000000000000001;
+        /// <summary>Raw time.</summary>
+        public ulong Raw { get; private set; } = IMMEDIATELY;
 
         /// <summary>Left of the decimal point.</summary>
         public uint Seconds { get { return (uint)(Raw >> 32); } }
@@ -43,6 +44,7 @@ namespace NebOsc
         /// </summary>
         public TimeTag()
         {
+            Raw = IMMEDIATELY;
         }
 
         /// <summary>
@@ -78,7 +80,7 @@ namespace NebOsc
         /// </summary>
         public override string ToString()
         {
-            return Raw == 1 ?
+            return Raw == IMMEDIATELY ?
                 $"When:Immediate" :
                 $"When:{FromRaw(Raw).ToString("yyyy'-'MM'-'dd HH':'mm':'ss.fff")} Seconds:{Seconds} Fraction:{Fraction}";
         }
