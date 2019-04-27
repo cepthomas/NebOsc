@@ -149,7 +149,7 @@ namespace NebOsc
         {
             if(cat != LogCategory.Send || Trace)
             {
-                LogEvent?.Invoke(this, new LogEventArgs() { DeviceLogCategory = cat, Message = "OSCOUT " + msg });
+                LogEvent?.Invoke(this, new LogEventArgs() { LogCategory = cat, Message = "OSCOUT " + msg });
             }
         }
         #endregion

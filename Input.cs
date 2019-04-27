@@ -164,7 +164,7 @@ namespace NebOsc
         {
             if (cat != LogCategory.Recv || Trace)
             {
-                LogEvent?.Invoke(this, new LogEventArgs() { DeviceLogCategory = cat, Message = "OSCIN " + msg });
+                LogEvent?.Invoke(this, new LogEventArgs() { LogCategory = cat, Message = "OSCIN " + msg });
             }
         }
         #endregion

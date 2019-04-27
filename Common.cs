@@ -2,14 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.IO;
-using System.Net.Sockets;
-using System.Net;
-using System.Diagnostics;
-using System.Threading;
-using System.Drawing;
 
 
 namespace NebOsc
@@ -25,7 +17,7 @@ namespace NebOsc
     public class LogEventArgs : EventArgs
     {
         /// <summary>Category.</summary>
-        public LogCategory DeviceLogCategory { get; set; } = LogCategory.Info;
+        public LogCategory LogCategory { get; set; } = LogCategory.Info;
 
         /// <summary>Text to log.</summary>
         public string Message { get; set; } = null;
