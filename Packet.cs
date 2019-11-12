@@ -10,7 +10,8 @@ using System.Net;
 using System.Diagnostics;
 using System.Threading;
 using System.Drawing;
-using NBagOfTricks;
+using NBagOfTricks.Utils;
+
 
 namespace NebOsc
 {
