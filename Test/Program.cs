@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NBagOfTricks;
+using NBagOfTricks.PNUT;
 using NebOsc;
 
 
@@ -163,7 +164,7 @@ namespace NebOsc.Test
             }
         }
 
-        public class OSC_Bundle : TestSuite // TODO more
+        public class OSC_Bundle : TestSuite
         {
             public override void RunSuite()
             {
