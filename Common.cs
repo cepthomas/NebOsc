@@ -13,18 +13,15 @@ namespace NebOsc
         public List<Message> Messages { get; set; } = new List<Message>();
     }
 
-    /// <summary>OSC wants to send something.</summary>
+    /// <summary>OSC wants to say something meta.</summary>
     public class LogEventArgs : EventArgs
     {
         /// <summary>Category.</summary>
-        public LogCategory LogCategory { get; set; } = LogCategory.Info;
+        public bool IsError { get; set; } = true;
 
-        /// <summary>Text to log.</summary>
+        /// <summary>Text to log. Usually</summary>
         public string Message { get; set; } = null;
     }
-
-    /// <summary>Category types.</summary>
-    public enum LogCategory { Info, Send, Recv, Error }
 
     /// <summary>
     /// Bunch of utilities for formatting and parsing.

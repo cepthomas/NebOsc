@@ -73,7 +73,7 @@ namespace NebOsc
             }
             catch (Exception ex)
             {
-                LogMsg(LogCategory.Error, $"Init OSCOUT failed: {ex.Message}");
+                LogMsg($"Init OSCOUT failed: {ex.Message}");
                 inited = false;
             }
 
@@ -127,11 +127,10 @@ namespace NebOsc
                     if (bytes != null)
                     {
                         int num = _udpClient.Send(bytes.ToArray(), bytes.Count);
-                        LogMsg(LogCategory.Send, msg.ToString());
                     }
                     else
                     {
-                        msg.Errors.ForEach(e => LogMsg(LogCategory.Error, e));
+                        msg.Errors.ForEach(e => LogMsg(e));
                         ok = false;
                     }
                 }
@@ -141,17 +140,12 @@ namespace NebOsc
         }
         #endregion
 
-        #region Private functions
         /// <summary>Ask host to do something with this.</summary>
-        /// <param name="cat"></param>
         /// <param name="msg"></param>
-        void LogMsg(LogCategory cat, string msg)
+        /// <param name="error"></param>
+        void LogMsg(string msg, bool error = true)
         {
-            if(cat != LogCategory.Send || Trace)
-            {
-                LogEvent?.Invoke(this, new LogEventArgs() { LogCategory = cat, Message = "OSCOUT " + msg });
-            }
+            LogEvent?.Invoke(this, new LogEventArgs() { Message = msg, IsError = error });
         }
-        #endregion
     }
 }

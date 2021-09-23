@@ -74,7 +74,7 @@ namespace NebOsc
             catch (Exception ex)
             {
                 inited = false;
-                LogMsg(LogCategory.Error, $"Init OSCIN failed: {ex.Message}");
+                LogMsg($"Init OSCIN failed: {ex.Message}");
             }
 
             return inited;
@@ -132,7 +132,7 @@ namespace NebOsc
                     }
                     else
                     {
-                        b.Errors.ForEach(e => LogMsg(LogCategory.Error, e));
+                        b.Errors.ForEach(e => LogMsg(e));
                     }
                 }
                 else
@@ -142,11 +142,10 @@ namespace NebOsc
                     if (m.Unpack(bytes))
                     {
                         args.Messages.Add(m);
-                        LogMsg(LogCategory.Recv, m.ToString());
                     }
                     else
                     {
-                        m.Errors.ForEach(e => LogMsg(LogCategory.Error, e));
+                        m.Errors.ForEach(e => LogMsg(e));
                     }
                 }
 
@@ -158,14 +157,11 @@ namespace NebOsc
         }
 
         /// <summary>Ask host to do something with this.</summary>
-        /// <param name="cat"></param>
         /// <param name="msg"></param>
-        void LogMsg(LogCategory cat, string msg)
+        /// <param name="error"></param>
+        void LogMsg(string msg, bool error = true)
         {
-            if (cat != LogCategory.Recv || Trace)
-            {
-                LogEvent?.Invoke(this, new LogEventArgs() { LogCategory = cat, Message = "OSCIN " + msg });
-            }
+            LogEvent?.Invoke(this, new LogEventArgs() { Message = msg, IsError = error });
         }
         #endregion
     }
