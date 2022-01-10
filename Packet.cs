@@ -21,52 +21,53 @@ namespace NebOsc
     public class Packet
     {
         #region Typed converters to/from binary. Not documented because they are self-explanatory
-        public List<byte> Pack(string value)
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        public static List<byte> Pack(string value)
         {
-            List<byte> bytes = new List<byte>();
+            List<byte> bytes = new();
             value.ToList().ForEach(v => bytes.Add((byte)v));
             bytes.Add(0); // terminate
             bytes.Pad(); // pad to 4x bytes
             return bytes;
         }
 
-        public List<byte> Pack(int value)
+        public static List<byte> Pack(int value)
         {
-            List<byte> bytes = new List<byte>(BitConverter.GetBytes(value));
+            List<byte> bytes = new(BitConverter.GetBytes(value));
             bytes.FixEndian();
             return bytes;
         }
 
-        public List<byte> Pack(ulong value)
+        public static List<byte> Pack(ulong value)
         {
-            List<byte> bytes = new List<byte>(BitConverter.GetBytes(value));
+            List<byte> bytes = new(BitConverter.GetBytes(value));
             bytes.FixEndian();
             return bytes;
         }
 
-        public List<byte> Pack(float value)
+        public static List<byte> Pack(float value)
         {
-            List<byte> bytes = new List<byte>(BitConverter.GetBytes(value));
+            List<byte> bytes = new(BitConverter.GetBytes(value));
             bytes.FixEndian();
             return bytes;
         }
 
-        public List<byte> Pack(List<byte> value)
+        public static List<byte> Pack(List<byte> value)
         {
-            List<byte> bytes = new List<byte>();
+            List<byte> bytes = new();
             bytes.AddRange(Pack(value.Count));
             bytes.AddRange(value);
             bytes.Pad(); // pad to 4x bytes
             return bytes;
         }
 
-        public bool Unpack(byte[] msg, ref int start, ref string val)
+        public static bool Unpack(byte[] msg, ref int start, ref string val)
         {
             bool ok = true;
 
             int state = 0; // 0=start 1=collecting-chars 2=looking-for-end 3=done
             int index = start;
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
             while(ok && state <= 2)
             {
@@ -137,10 +138,9 @@ namespace NebOsc
             return ok;
         }
 
-        public bool Unpack(byte[] msg, ref int start, ref int val)
+        public static bool Unpack(byte[] msg, ref int start, ref int val)
         {
             bool ok = false;
-            int nextStart = start;
 
             // Sanity checks.
             if (msg.Length - start >= 4)
@@ -156,10 +156,9 @@ namespace NebOsc
             return ok;
         }
 
-        public bool Unpack(byte[] msg, ref int start, ref ulong val)
+        public static bool Unpack(byte[] msg, ref int start, ref ulong val)
         {
             bool ok = false;
-            int nextStart = start;
 
             // Sanity checks.
             if (msg.Length - start >= 8)
@@ -175,10 +174,9 @@ namespace NebOsc
             return ok;
         }
 
-        public bool Unpack(byte[] msg, ref int start, ref float val)
+        public static bool Unpack(byte[] msg, ref int start, ref float val)
         {
             bool ok = false;
-            int nextStart = start;
 
             // Sanity checks.
             if (msg.Length - start >= 4)
@@ -194,7 +192,7 @@ namespace NebOsc
             return ok;
         }
 
-        public bool Unpack(byte[] msg, ref int start, ref List<byte> val)
+        public static bool Unpack(byte[] msg, ref int start, ref List<byte> val)
         {
             bool ok = false;
             //int nextStart = start;
@@ -223,6 +221,7 @@ namespace NebOsc
 
             return ok;
         }
+#pragma warning restore CS1591
         #endregion
     }
 }

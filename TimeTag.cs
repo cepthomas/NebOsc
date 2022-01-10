@@ -21,7 +21,7 @@ namespace NebOsc
     {
         #region Constants
         /// <summary>DateTime at OSC epoch 1900-01-01 00:00:00.000.</summary>
-        static readonly DateTime EPOCH_DT = new DateTime(1900, 1, 1, 0, 0, 0, 0);
+        static readonly DateTime EPOCH_DT = new(1900, 1, 1, 0, 0, 0, 0);
 
         /// <summary>The special case meaning "immediately."</summary>
         static readonly ulong IMMEDIATELY = 0x0000000000000001;
@@ -82,7 +82,7 @@ namespace NebOsc
         {
             return Raw == IMMEDIATELY ?
                 $"When:Immediate" :
-                $"When:{FromRaw(Raw).ToString("yyyy'-'MM'-'dd HH':'mm':'ss.fff")} Seconds:{Seconds} Fraction:{Fraction}";
+                $"When:{FromRaw(Raw):yyyy'-'MM'-'dd HH':'mm':'ss.fff} Seconds:{Seconds} Fraction:{Fraction}";
         }
         #endregion
 
@@ -92,7 +92,7 @@ namespace NebOsc
         /// </summary>
         /// <param name="when"></param>
         /// <returns></returns>
-        ulong FromDateTime(DateTime when)
+        static ulong FromDateTime(DateTime when)
         {
             TimeSpan ts = when - EPOCH_DT;
             double seconds = Math.Truncate(ts.TotalSeconds);
@@ -106,7 +106,7 @@ namespace NebOsc
         /// </summary>
         /// <param name="raw"></param>
         /// <returns></returns>
-        DateTime FromRaw(ulong raw)
+        static DateTime FromRaw(ulong raw)
         {
             uint seconds = (uint)(raw >> 32);
             uint fraction = (uint)(raw & 0x00000000FFFFFFFF);
@@ -117,6 +117,9 @@ namespace NebOsc
         #endregion
 
         #region Standard overrides and operators for custom classes
+#pragma warning disable CS8604 // Possible null reference argument.
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
         public override bool Equals(object obj)
         {
             return Equals(obj as TimeTag);
@@ -124,7 +127,7 @@ namespace NebOsc
 
         public bool Equals(TimeTag obj)
         {
-            return obj != null && ReferenceEquals(this, obj);
+            return obj is not null && ReferenceEquals(this, obj);
         }
 
         public override int GetHashCode()
@@ -134,33 +137,34 @@ namespace NebOsc
 
         public static bool operator ==(TimeTag t1, TimeTag t2)
         {
-            return (object)t1 != null && (object)t2 != null && (t1.Raw == t2.Raw);
+            return t1 is not null && t2 is not null && (t1.Raw == t2.Raw);
         }
 
         public static bool operator !=(TimeTag t1, TimeTag t2)
         {
-            return (object)t1 == null || (object)t2 == null || (t1.Raw != t2.Raw);
+            return t1 is null || t2 is null || (t1.Raw != t2.Raw);
         }
 
         public static bool operator >(TimeTag t1, TimeTag t2)
         {
-            return (object)t1 == null || (object)t2 == null || t1.Raw > t2.Raw;
+            return t1 is null || t2 is null || t1.Raw > t2.Raw;
         }
 
         public static bool operator >=(TimeTag t1, TimeTag t2)
         {
-            return (object)t1 == null || (object)t2 == null || t1.Raw >= t2.Raw;
+            return t1 is null || t2 is null || t1.Raw >= t2.Raw;
         }
 
         public static bool operator <(TimeTag t1, TimeTag t2)
         {
-            return (object)t1 == null || (object)t2 == null || t1.Raw < t2.Raw;
+            return t1 is null || t2 is null || t1.Raw < t2.Raw;
         }
 
         public static bool operator <=(TimeTag t1, TimeTag t2)
         {
-            return (object)t1 == null || (object)t2 == null || t1.Raw <= t2.Raw;
+            return t1 is null || t2 is null || t1.Raw <= t2.Raw;
         }
+#pragma warning restore CS1591, CS8604, CS8765
         #endregion
     }
 }

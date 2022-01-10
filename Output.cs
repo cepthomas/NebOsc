@@ -18,14 +18,14 @@ namespace NebOsc
     /// <summary>
     /// OSC client.
     /// </summary>
-    public class Output
+    public class Output : IDisposable
     {
         #region Fields
         /// <summary>OSC output device.</summary>
-        UdpClient _udpClient;
+        UdpClient? _udpClient;
 
         /// <summary>Access synchronizer.</summary>
-        readonly object _lock = new object();
+        readonly object _lock = new();
 
         /// <summary>Resource clean up.</summary>
         bool _disposed = false;
@@ -33,7 +33,7 @@ namespace NebOsc
 
         #region Events
         /// <inheritdoc />
-        public event EventHandler<LogEventArgs> LogEvent;
+        public event EventHandler<LogEventArgs>? LogEvent;
         #endregion
 
         #region Properties
@@ -56,8 +56,7 @@ namespace NebOsc
         /// <returns></returns>
         public bool Init()
         {
-            bool inited = false;
-
+            bool inited;
             try
             {
                 if (_udpClient != null)
@@ -119,9 +118,9 @@ namespace NebOsc
             // Critical code section.
             lock (_lock)
             {
-                if (_udpClient != null)
+                if (_udpClient is not null && msg is not null)
                 {
-                    List<int> msgs = new List<int>();
+                    List<int> msgs = new();
 
                     List<byte> bytes = msg.Pack();
                     if (bytes != null)

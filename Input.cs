@@ -18,11 +18,11 @@ namespace NebOsc
     /// <summary>
     /// OSC server.
     /// </summary>
-    public class Input
+    public class Input : IDisposable
     {
         #region Fields
         /// <summary>OSC input device.</summary>
-        UdpClient _udpClient = null;
+        UdpClient? _udpClient = null;
 
         /// <summary>Resource clean up.</summary>
         bool _disposed = false;
@@ -30,10 +30,10 @@ namespace NebOsc
 
         #region Events
         /// <summary>Request for logging service. May need Invoke() if client is UI.</summary>
-        public event EventHandler<LogEventArgs> LogEvent;
+        public event EventHandler<LogEventArgs>? LogEvent;
 
         /// <summary>Reporting a change to listeners. May need Invoke() if client is UI.</summary>
-        public event EventHandler<InputEventArgs> InputEvent;
+        public event EventHandler<InputEventArgs>? InputEvent;
         #endregion
 
         #region Properties
@@ -58,15 +58,11 @@ namespace NebOsc
 
             try
             {
-                if (_udpClient != null)
-                {
-                    _udpClient.Close();
-                    _udpClient.Dispose();
-                    _udpClient = null;
-                }
+                _udpClient?.Close();
+                _udpClient?.Dispose();
 
-                _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, LocalPort));
-                _udpClient.BeginReceive(new AsyncCallback(ReceiveCallback), this);
+                _udpClient = new(new IPEndPoint(IPAddress.Any, LocalPort));
+                _udpClient!.BeginReceive(new AsyncCallback(ReceiveCallback), this);
 
                 inited = true;
                 DeviceName = $"OSCIN:{LocalPort}";
@@ -99,7 +95,6 @@ namespace NebOsc
             {
                 _udpClient?.Close();
                 _udpClient?.Dispose();
-                _udpClient = null;
 
                 _disposed = true;
             }
@@ -113,19 +108,19 @@ namespace NebOsc
         /// <param name="ar"></param>
         void ReceiveCallback(IAsyncResult ar)
         {
-            IPEndPoint sender = new IPEndPoint(IPAddress.Any, LocalPort);
+            IPEndPoint? sender = new(IPAddress.Any, LocalPort);
 
             // Process input.
-            byte[] bytes = _udpClient.EndReceive(ar, ref sender);
+            byte[] bytes = _udpClient!.EndReceive(ar, ref sender);
 
             if (InputEvent != null && bytes != null && bytes.Length > 0)
             {
-                InputEventArgs args = new InputEventArgs();
+                InputEventArgs args = new();
 
                 // Unpack - check for bundle or message.
                 if (bytes[0] == '#')
                 {
-                    Bundle b = new Bundle();
+                    Bundle b = new();
                     if(b.Unpack(bytes))
                     {
                         args.Messages.AddRange(b.Messages);
@@ -137,7 +132,7 @@ namespace NebOsc
                 }
                 else
                 {
-                    Message m = new Message();
+                    Message m = new();
 
                     if (m.Unpack(bytes))
                     {
@@ -153,7 +148,7 @@ namespace NebOsc
             }
 
             // Listen again.
-            _udpClient.BeginReceive(new AsyncCallback(ReceiveCallback), this);
+            _udpClient?.BeginReceive(new AsyncCallback(ReceiveCallback), this);
         }
 
         /// <summary>Ask host to do something with this.</summary>

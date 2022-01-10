@@ -20,7 +20,7 @@ namespace NebOsc
         public bool IsError { get; set; } = true;
 
         /// <summary>Text to log. Usually</summary>
-        public string Message { get; set; } = null;
+        public string Message { get; set; } = "???";
     }
 
     /// <summary>
@@ -61,7 +61,7 @@ namespace NebOsc
         /// <returns></returns>
         public static string Dump(this List<byte> bytes, string delim = "")
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             bytes.ForEach(b => { if (IsReadable(b)) sb.Append((char)b); else sb.AppendFormat(@"{0}{1:000}", delim, b); });
             return sb.ToString();
         }

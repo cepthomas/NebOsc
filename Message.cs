@@ -21,32 +21,32 @@ namespace NebOsc
     {
         #region Properties
         /// <summary>The OSC address.</summary>
-        public string Address { get; set; } = null;
+        public string Address { get; set; } = "???";
 
         /// <summary>OSC data elements in the message.</summary>
-        public List<object> Data { get; private set; } = new List<object>();
+        public List<object> Data { get; private set; } = new();
 
         /// <summary>Parse errors.</summary>
-        public List<string> Errors { get; private set; } = new List<string>();
+        public List<string> Errors { get; private set; } = new();
         #endregion
 
         #region Public functions
         /// <summary>
         /// Format to binary form.
         /// </summary>
-        /// <returns>The byte array or null if error occurred.</returns>
+        /// <returns>The byte array or empty if error occurred.</returns>
         public List<byte> Pack()
         {
-            List<byte> bytes = new List<byte>();
+            List<byte> bytes = new();
             Errors.Clear();
 
             try
             {
                 // Data type string.
-                StringBuilder dtype = new StringBuilder();
+                StringBuilder dtype = new();
 
                 // Data values.
-                List<byte> dvals = new List<byte>();
+                List<byte> dvals = new();
 
                 Data.ForEach(d =>
                 {
@@ -97,7 +97,7 @@ namespace NebOsc
                 Errors.Add($"Exception while packing message: {ex.Message}");
             }
 
-            return Errors.Count == 0 ? bytes : null;
+            return Errors.Count == 0 ? bytes : new();
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace NebOsc
                 Data.Clear();
 
                 // Parse address.
-                string address = null;
+                string address = "???";
                 if(Unpack(bytes, ref index, ref address))
                 {
                     Address = address;
@@ -181,7 +181,7 @@ namespace NebOsc
                             break;
 
                         case 'b':
-                            List<byte> db = new List<byte>();
+                            List<byte> db = new();
                             if(Unpack(bytes, ref index, ref db))
                             {
                                 Data.Add(db);
@@ -212,14 +212,14 @@ namespace NebOsc
         /// <returns></returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.Append($"Address:{Address} Data:");
 
             Data.ForEach(d =>
             {
-                if (d is List<byte>)
+                if (d is List<byte> b)
                 {
-                    sb.Append($"byte[{(d as List<byte>).Count}],");
+                    sb.Append($"byte[{b.Count}],");
                 }
                 else
                 {

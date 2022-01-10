@@ -27,23 +27,23 @@ namespace NebOsc
 
         #region Properties
         /// <summary>The OSC timetag.</summary>
-        public TimeTag TimeTag { get; set; } = new TimeTag();
+        public TimeTag TimeTag { get; set; } = new();
 
         /// <summary>Contained messages.</summary>
-        public List<Message> Messages { get; private set; } = new List<Message>();
+        public List<Message> Messages { get; private set; } = new();
 
         /// <summary>Parse errors.</summary>
-        public List<string> Errors { get; private set; } = new List<string>();
+        public List<string> Errors { get; private set; } = new();
         #endregion
 
         #region Public functions
         /// <summary>
         /// Format to binary form.
         /// </summary>
-        /// <returns>The byte array or null if error occurred.</returns>
+        /// <returns>The byte array or empty if error occurred.</returns>
         public List<byte> Pack()
         {
-            List<byte> bytes = new List<byte>();
+            List<byte> bytes = new();
 
             try
             {
@@ -69,7 +69,7 @@ namespace NebOsc
                 Errors.Add($"Exception while packing bundle: {ex.Message}");
             }
 
-            return Errors.Count == 0 ? bytes : null;
+            return Errors.Count == 0 ? bytes : new();
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace NebOsc
                 Messages.Clear();
 
                 // Parse marker.
-                string marker = null;
+                string marker = "";
                 if (Unpack(bytes, ref index, ref marker))
                 {
                     if (marker != BUNDLE_ID)
@@ -111,13 +111,13 @@ namespace NebOsc
                 }
 
                 // Parse bundles and messages.
-                List<Bundle> bundles = new List<Bundle>();
+                List<Bundle> bundles = new();
 
-                while (index < bytes.Count() && Errors.Count == 0)
+                while (index < bytes.Length && Errors.Count == 0)
                 {
                     if (bytes[index] == '#') // bundle?
                     {
-                        Bundle b = new Bundle();
+                        Bundle b = new();
                         if (b.Unpack(bytes))
                         {
                             bundles.Add(b);
@@ -129,7 +129,7 @@ namespace NebOsc
                     }
                     else // message?
                     {
-                        Message m = new Message();
+                        Message m = new();
                         if (m.Unpack(bytes))
                         {
                             Messages.Add(m);

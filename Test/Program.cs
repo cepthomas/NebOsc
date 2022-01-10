@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,11 +13,12 @@ namespace NebOsc.Test
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            TestRunner runner = new TestRunner(OutputFormat.Readable);
+            TestRunner runner = new(OutputFormat.Readable);
             string[] cases = new string[] { "OSC" };
             runner.RunSuites(cases);
+            File.WriteAllLines(@"test_out.txt", runner.Context.OutputLines);
         }
 
         public class OSC_TimeTag : TestSuite
@@ -24,14 +26,14 @@ namespace NebOsc.Test
             public override void RunSuite()
             {
                 // Make some test objects.
-                DateTime dt1 = new DateTime(2005, 5, 9, 15, 47, 39, 123);
-                DateTime dt2 = new DateTime(2022, 11, 24, 7, 29, 6, 801);
+                DateTime dt1 = new(2005, 5, 9, 15, 47, 39, 123);
+                DateTime dt2 = new(2022, 11, 24, 7, 29, 6, 801);
 
-                TimeTag ttImmediate = new TimeTag(); // default constructor
-                TimeTag tt1 = new TimeTag(dt1); // specific constructor
-                TimeTag tt2 = new TimeTag(dt2);
-                TimeTag tt1raw = new TimeTag(tt1.Raw); // constructor from raw
-                TimeTag tt2copy = new TimeTag(new TimeTag(dt2)); // copy constructor
+                TimeTag ttImmediate = new(); // default constructor
+                TimeTag tt1 = new(dt1); // specific constructor
+                TimeTag tt2 = new(dt2);
+                TimeTag tt1raw = new(tt1.Raw); // constructor from raw
+                TimeTag tt2copy = new(new TimeTag(dt2)); // copy constructor
 
                 // Check them all.
                 UT_EQUAL(ttImmediate.ToString(), "When:Immediate");
@@ -65,59 +67,57 @@ namespace NebOsc.Test
         {
             public override void RunSuite()
             {
-                Packet pkt = new Packet();
-
-                List<byte> bytes = new List<byte>();
-                bool ok = false;
-                int start = -1;
+                List<byte> bytes;
+                bool ok;
+                int start;
 
                 // pack
-                bytes = pkt.Pack("Abe*-88= XXXq");
+                bytes = Packet.Pack("Abe*-88= XXXq");
                 UT_EQUAL(bytes.Count, 16);
                 // unpack
                 string sval = "";
                 start = 0;
-                ok = pkt.Unpack(bytes.ToArray(), ref start, ref sval);
+                ok = Packet.Unpack(bytes.ToArray(), ref start, ref sval);
                 UT_TRUE(ok);
                 UT_EQUAL(sval, "Abe*-88= XXXq");
 
                 // pack
-                bytes = pkt.Pack(193082);
+                bytes = Packet.Pack(193082);
                 UT_EQUAL(bytes.Count, 4);
                 // unpack
                 int ival = 0;
                 start = 0;
-                ok = pkt.Unpack(bytes.ToArray(), ref start, ref ival);
+                ok = Packet.Unpack(bytes.ToArray(), ref start, ref ival);
                 UT_TRUE(ok);
                 UT_EQUAL(ival, 193082);
 
                 // pack
-                bytes = pkt.Pack(7340912L);
+                bytes = Packet.Pack(7340912L);
                 UT_EQUAL(bytes.Count, 8);
                 // unpack
                 ulong uval = 0;
                 start = 0;
-                ok = pkt.Unpack(bytes.ToArray(), ref start, ref uval);
+                ok = Packet.Unpack(bytes.ToArray(), ref start, ref uval);
                 UT_TRUE(ok);
                 UT_EQUAL(uval, (ulong)7340912);
 
                 // pack
-                bytes = pkt.Pack(2965.8345f);
+                bytes = Packet.Pack(2965.8345f);
                 UT_EQUAL(bytes.Count, 4);
                 // unpack
                 float fval = 0;
                 start = 0;
-                ok = pkt.Unpack(bytes.ToArray(), ref start, ref fval);
+                ok = Packet.Unpack(bytes.ToArray(), ref start, ref fval);
                 UT_TRUE(ok);
                 UT_EQUAL(fval, 2965.8345f);
 
                 // pack
-                bytes = pkt.Pack(new List<byte>() { 11, 28, 205, 68, 137, 251, 59, 71, 184 });
+                bytes = Packet.Pack(new List<byte>() { 11, 28, 205, 68, 137, 251, 59, 71, 184 });
                 UT_EQUAL(bytes.Count, 16);
                 // unpack
-                List<byte> bval = new List<byte>();
+                List<byte> bval = new();
                 start = 0;
-                ok = pkt.Unpack(bytes.ToArray(), ref start, ref bval);
+                ok = Packet.Unpack(bytes.ToArray(), ref start, ref bval);
                 UT_TRUE(ok);
                 UT_EQUAL(bval.Count, 9);
                 UT_EQUAL(bval[3], 68);
@@ -129,22 +129,19 @@ namespace NebOsc.Test
         {
             public override void RunSuite()
             {
-                Message m1 = new Message() { Address = @"/foo/bar" };
+                Message m1 = new() { Address = @"/foo/bar" };
 
                 m1.Data.Add(919);
                 m1.Data.Add("some text");
                 m1.Data.Add(83.743);
                 m1.Data.Add(new List<byte>() { 11, 28, 205, 68, 137, 251 });
 
-                List<byte> packed = m1.Pack();
+                var packed = m1.Pack();
 
-                //var vs = packed.Dump("|");
-                //UT_INFO(vs);
+                UT_NOT_EQUAL(packed.Count, 0);
+                UT_EQUAL(packed.Count, 52);
 
-                UT_FALSE(packed == null);
-                UT_EQUAL(packed.Count(), 52);
-
-                Message m2 = new Message();
+                Message m2 = new();
                 bool valid = m2.Unpack(packed.ToArray());
 
                 UT_TRUE(valid);
@@ -158,7 +155,7 @@ namespace NebOsc.Test
                 // Add some invalid data.
                 m1.Data.Add(new List<double>());
                 packed = m1.Pack();
-                UT_TRUE(packed == null);
+                UT_EQUAL(packed.Count, 0);
                 UT_EQUAL(m1.Errors.Count, 1);
                 UT_EQUAL(m1.Errors[0], "Unknown type: System.Collections.Generic.List`1[System.Double]");
             }
@@ -168,11 +165,9 @@ namespace NebOsc.Test
         {
             public override void RunSuite()
             {
-                DateTime dt = new DateTime(2005, 5, 9, 15, 47, 39, 123);
-                TimeTag tt = new TimeTag(dt);
-                TimeTag ttImmediate = new TimeTag();
-
-                Bundle b = new Bundle() { TimeTag = tt };
+                //DateTime dt = new(2005, 5, 9, 15, 47, 39, 123);
+                //TimeTag tt = new(dt);
+                //Bundle b = new() { TimeTag = tt };
             }
         }
 
@@ -180,12 +175,12 @@ namespace NebOsc.Test
         {
             public override void RunSuite()
             {
-                List<Message> rxMsgs = new List<Message>();
+                List<Message> rxMsgs = new();
 
-                List<string> logs = new List<string>();
+                List<string> logs = new();
 
-                Input nin = new Input() { LocalPort = 9700 };
-                Output nout = new Output() { RemotePort = 9700, RemoteIP = "127.0.0.1" };
+                Input nin = new() { LocalPort = 9700 };
+                Output nout = new() { RemotePort = 9700, RemoteIP = "127.0.0.1" };
 
                 nin.InputEvent += (_, e) => rxMsgs.AddRange(e.Messages);
                 nin.LogEvent += (_, e) => logs.Add(e.Message);
@@ -198,7 +193,7 @@ namespace NebOsc.Test
                 UT_TRUE(ok);
 
                 // Send some messages to myself.
-                Message m1 = new Message() { Address = "/foo/bar/" };
+                Message m1 = new() { Address = "/foo/bar/" };
                 m1.Data.Add(82828);
                 m1.Data.Add(new List<byte>() { 22, 44, 77, 0, 211 });
                 m1.Data.Add(199.44);
