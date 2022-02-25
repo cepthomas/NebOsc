@@ -1,6 +1,8 @@
 # NebOsc
 Simple .NET OSC library. Look at the Test project for how to use it.
 
+Requires VS2019 and .NET5.
+
 Reference from [OSC Spec](http://opensoundcontrol.org/spec-1_0):
 - Message contains an address, a comma followed by one or more data type identifiers, then the data itself follows in binary encoding.
 - Data types - minimal:

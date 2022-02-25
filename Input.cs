@@ -23,9 +23,6 @@ namespace NebOsc
         #region Fields
         /// <summary>OSC input device.</summary>
         UdpClient? _udpClient = null;
-
-        /// <summary>Resource clean up.</summary>
-        bool _disposed = false;
         #endregion
 
         #region Events
@@ -81,23 +78,8 @@ namespace NebOsc
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Resource clean up.
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed && disposing)
-            {
-                _udpClient?.Close();
-                _udpClient?.Dispose();
-
-                _disposed = true;
-            }
+            _udpClient?.Close();
+            _udpClient?.Dispose();
         }
         #endregion
 
@@ -113,7 +95,7 @@ namespace NebOsc
             // Process input.
             byte[] bytes = _udpClient!.EndReceive(ar, ref sender);
 
-            if (InputEvent != null && bytes != null && bytes.Length > 0)
+            if (InputEvent is not null && bytes is not null && bytes.Length > 0)
             {
                 InputEventArgs args = new();
 

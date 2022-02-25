@@ -147,10 +147,10 @@ namespace NebOsc.Test
                 UT_TRUE(valid);
                 UT_EQUAL(m2.Address, m1.Address);
                 UT_EQUAL(m2.Data.Count, m1.Data.Count);
-                UT_EQUAL(m2.Data[0].ToString(), m1.Data[0].ToString());
-                UT_EQUAL(m2.Data[1].ToString(), m1.Data[1].ToString());
-                UT_EQUAL(m2.Data[2].ToString(), m1.Data[2].ToString());
-                UT_EQUAL(m2.Data[3].ToString(), m1.Data[3].ToString());
+                UT_EQUAL(m2.Data[0].ToString()!, m1.Data[0].ToString()!);
+                UT_EQUAL(m2.Data[1].ToString()!, m1.Data[1].ToString()!);
+                UT_EQUAL(m2.Data[2].ToString()!, m1.Data[2].ToString()!);
+                UT_EQUAL(m2.Data[3].ToString()!, m1.Data[3].ToString()!);
 
                 // Add some invalid data.
                 m1.Data.Add(new List<double>());

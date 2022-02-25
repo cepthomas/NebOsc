@@ -26,9 +26,6 @@ namespace NebOsc
 
         /// <summary>Access synchronizer.</summary>
         readonly object _lock = new();
-
-        /// <summary>Resource clean up.</summary>
-        bool _disposed = false;
         #endregion
 
         #region Events
@@ -59,7 +56,7 @@ namespace NebOsc
             bool inited;
             try
             {
-                if (_udpClient != null)
+                if (_udpClient is not null)
                 {
                     _udpClient.Close();
                     _udpClient.Dispose();
@@ -84,24 +81,9 @@ namespace NebOsc
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Resource clean up.
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed && disposing)
-            {
-                _udpClient?.Close();
-                _udpClient?.Dispose();
-                _udpClient = null;
-
-                _disposed = true;
-            }
+            _udpClient?.Close();
+            _udpClient?.Dispose();
+            _udpClient = null;
         }
         #endregion
 
@@ -123,7 +105,7 @@ namespace NebOsc
                     List<int> msgs = new();
 
                     List<byte> bytes = msg.Pack();
-                    if (bytes != null)
+                    if (bytes is not null)
                     {
                         int num = _udpClient.Send(bytes.ToArray(), bytes.Count);
                     }
