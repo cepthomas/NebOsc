@@ -3,9 +3,6 @@ Simple .NET OSC library. Look at the Test project for how to use it.
 
 Requires VS2019 and .NET5.
 
-Uses:
-- [NBagOfTricks](https://github.com/cepthomas/NBagOfTricks/blob/main/README.md)
-
 
 Reference from [OSC Spec](http://opensoundcontrol.org/spec-1_0):
 - Message contains an address, a comma followed by one or more data type identifiers, then the data itself follows in binary encoding.
@@ -26,3 +23,6 @@ Reference from [OSC Spec](http://opensoundcontrol.org/spec-1_0):
 Notes/modifications:
 - Supports Messages and Bundles but not nested Bundles.
 - Only the default data types are supported.
+
+Uses:
+- [NBagOfTricks](https://github.com/cepthomas/NBagOfTricks/blob/main/README.md)
