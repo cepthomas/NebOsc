@@ -18,7 +18,7 @@ namespace NebOsc
     /// <summary>
     /// OSC server.
     /// </summary>
-    public class Input : IDisposable
+    public sealed class Input : IDisposable
     {
         #region Fields
         /// <summary>OSC input device.</summary>

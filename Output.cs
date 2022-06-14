@@ -18,7 +18,7 @@ namespace NebOsc
     /// <summary>
     /// OSC client.
     /// </summary>
-    public class Output : IDisposable
+    public sealed class Output : IDisposable
     {
         #region Fields
         /// <summary>OSC output device.</summary>
