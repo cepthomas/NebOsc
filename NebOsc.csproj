@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <TargetFrameworks>net5.0-windows</TargetFrameworks>
+        <TargetFrameworks>net6.0-windows</TargetFrameworks>
         <UseWindowsForms>false</UseWindowsForms>
         <Version>$([System.DateTime]::UtcNow.ToString(yy.MM.dd))</Version>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
