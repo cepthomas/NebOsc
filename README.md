@@ -1,7 +1,7 @@
 # NebOsc
 Simple .NET OSC library. Look at the Test project for how to use it.
 
-Requires VS2019 and .NET6.
+Requires VS2022 and .NET6.
 
 
 Reference from [OSC Spec](http://opensoundcontrol.org/spec-1_0):
