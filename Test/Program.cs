@@ -179,18 +179,12 @@ namespace NebOsc.Test
 
                 List<string> logs = new();
 
-                Input nin = new() { LocalPort = 9700 };
-                Output nout = new() { RemotePort = 9700, RemoteIP = "127.0.0.1" };
+                Input nin = new(9700);
+                Output nout = new("127.0.0.1", 9700);
 
                 nin.InputEvent += (_, e) => rxMsgs.AddRange(e.Messages);
                 nin.LogEvent += (_, e) => logs.Add(e.Message);
                 nout.LogEvent += (_, e) => logs.Add(e.Message);
-
-                bool ok = nin.Init();
-                UT_TRUE(ok);
-
-                ok = nout.Init();
-                UT_TRUE(ok);
 
                 // Send some messages to myself.
                 Message m1 = new() { Address = "/foo/bar/" };
@@ -198,7 +192,7 @@ namespace NebOsc.Test
                 m1.Data.Add(new List<byte>() { 22, 44, 77, 0, 211 });
                 m1.Data.Add(199.44);
                 m1.Data.Add("Snafu boss-man");
-                ok = nout.Send(m1);
+                bool ok = nout.Send(m1);
                 UT_TRUE(ok);
 
                 // Wait a bit.

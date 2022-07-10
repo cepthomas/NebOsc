@@ -35,13 +35,13 @@ namespace NebOsc
 
         #region Properties
         /// <inheritdoc />
-        public string DeviceName { get; private set; } = "Invalid";
+        public string DeviceName { get; init; } = "Invalid";
 
         /// <summary>Where to?</summary>
-        public string RemoteIP { get; set; } = "Invalid";
+        public string RemoteIP { get; init; } = "Invalid";
 
         /// <summary>Where to?</summary>
-        public int RemotePort { get; set; } = -1;
+        public int RemotePort { get; init; } = -1;
 
         /// <summary>Trace other than errors.</summary>
         public bool Trace { get; set; } = false;
@@ -49,31 +49,26 @@ namespace NebOsc
 
         #region Lifecycle
         /// <summary>
+        /// Constructor.
         /// </summary>
         /// <returns></returns>
-        public bool Init()
+        public Output(string remoteIP, int remotePort)
         {
-            bool inited;
+            RemoteIP = remoteIP;
+            RemotePort = remotePort;
+
             try
             {
-                if (_udpClient is not null)
-                {
-                    _udpClient.Close();
-                    _udpClient.Dispose();
-                    _udpClient = null;
-                }
-
                 _udpClient = new UdpClient(RemoteIP, RemotePort);
-                inited = true;
                 DeviceName = $"OSCOUT:{RemoteIP}:{RemotePort}";
             }
             catch (Exception ex)
             {
-                LogMsg($"Init OSCOUT failed: {ex.Message}");
-                inited = false;
+                var s = $"Init OSCOUT failed: {ex.Message}";
+                LogMsg(s);
+                Dispose();
+                throw new InvalidOperationException(s);
             }
-
-            return inited;
         }
 
         /// <summary>

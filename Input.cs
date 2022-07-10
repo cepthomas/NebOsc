@@ -35,10 +35,10 @@ namespace NebOsc
 
         #region Properties
         /// <summary>Name.</summary>
-        public string DeviceName { get; private set; } = "Invalid";
+        public string DeviceName { get; init; } = "Invalid";
 
         /// <summary>The receive port.</summary>
-        public int LocalPort { get; set; } = -1;
+        public int LocalPort { get; init; } = -1;
 
         /// <summary>Trace other than errors.</summary>
         public bool Trace { get; set; } = false;
@@ -46,31 +46,26 @@ namespace NebOsc
 
         #region Lifecycle
         /// <summary>
-        /// Set up listening for OSC messages.
+        /// Constructor. Set up listening for OSC messages.
         /// </summary>
         /// <returns></returns>
-        public bool Init()
+        public Input(int localPort)
         {
-            bool inited = false;
+            LocalPort = localPort;
 
             try
             {
-                _udpClient?.Close();
-                _udpClient?.Dispose();
-
                 _udpClient = new(new IPEndPoint(IPAddress.Any, LocalPort));
                 _udpClient!.BeginReceive(new AsyncCallback(ReceiveCallback), this);
-
-                inited = true;
                 DeviceName = $"OSCIN:{LocalPort}";
             }
             catch (Exception ex)
             {
-                inited = false;
-                LogMsg($"Init OSCIN failed: {ex.Message}");
+                var s = $"Init OSCIN failed: {ex.Message}";
+                LogMsg(s);
+                Dispose();
+                throw new InvalidOperationException(s);
             }
-
-            return inited;
         }
 
         /// <summary>
@@ -80,6 +75,7 @@ namespace NebOsc
         {
             _udpClient?.Close();
             _udpClient?.Dispose();
+            _udpClient = null;
         }
         #endregion
 
