@@ -3,8 +3,7 @@ Simple .NET OSC library. Look at the Test project for how to use it.
 
 Requires VS2022 and .NET6.
 
-
-Reference from [OSC Spec](http://opensoundcontrol.org/spec-1_0):
+Reference from [OSC](https://opensoundcontrol.stanford.edu):
 - Message contains an address, a comma followed by one or more data type identifiers, then the data itself follows in binary encoding.
 - Data types - minimal:
   - i = int32 = 32-bit big-endian two's complement integer
