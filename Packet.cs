@@ -21,7 +21,7 @@ namespace NebOsc
     public class Packet
     {
         #region Typed converters to/from binary. Not documented because they are self-explanatory
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public static List<byte> Pack(string value)
         {
             List<byte> bytes = new();
@@ -221,7 +221,7 @@ namespace NebOsc
 
             return ok;
         }
-#pragma warning restore CS1591
+        #pragma warning restore CS1591
         #endregion
     }
 }

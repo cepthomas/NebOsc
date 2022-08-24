@@ -28,7 +28,6 @@ namespace NebOsc
     /// </summary>
     public static class Utils
     {
-        #region Utilities
         /// <summary>
         /// Add 0s to make multiple of 4.
         /// </summary>
@@ -75,6 +74,5 @@ namespace NebOsc
         {
             return b >= 32 && b <= 126;
         }
-        #endregion
     }
 }
