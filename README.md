@@ -3,7 +3,7 @@ Simple .NET OSC library. Look at the Test project for how to use it.
 
 Requires VS2022 and .NET6.
 
-No dependencies on external components. Does use my NBagOfTricks.
+No dependencies on external components.
 
 Reference from [OSC](https://opensoundcontrol.stanford.edu):
 - Message contains an address, a comma followed by one or more data type identifiers, then the data itself follows in binary encoding.
