@@ -10,10 +10,10 @@ using System.Net;
 using System.Diagnostics;
 using System.Threading;
 using System.Drawing;
-using NBagOfTricks;
+using Ephemera.NBagOfTricks;
 
 
-namespace NebOsc
+namespace Ephemera.NebOsc
 {
     /// <summary>
     /// OSC server.

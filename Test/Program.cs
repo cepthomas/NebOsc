@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NBagOfTricks;
-using NBagOfTricks.PNUT;
-using NebOsc;
+using Ephemera.NBagOfTricks;
+using Ephemera.NBagOfTricks.PNUT;
+using Ephemera.NebOsc;
 
 
-namespace NebOsc.Test
+namespace Ephemera.NebOsc.Test
 {
     class Program
     {

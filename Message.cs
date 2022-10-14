@@ -12,7 +12,7 @@ using System.Threading;
 using System.Drawing;
 
 
-namespace NebOsc
+namespace Ephemera.NebOsc
 {
     /// <summary>
     /// Representation of an OSC Message. For doc see README.md.

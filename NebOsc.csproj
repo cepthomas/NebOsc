@@ -8,8 +8,8 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Description>NebOsc core stuff</Description>
         <Copyright>MIT License</Copyright>
-        <RootNamespace>NebOsc</RootNamespace>
-        <AssemblyName>NebOsc</AssemblyName>
+        <RootNamespace>Ephemera.NebOsc</RootNamespace>
+        <AssemblyName>Ephemera.NebOsc</AssemblyName>
         <OutputPath>bin\</OutputPath>
         <!-- <DefineConstants>DEBUG;TRACE</DefineConstants> -->
         <!-- <NoWarn>CS1591</NoWarn> -->
@@ -31,8 +31,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="NBagOfTricks">
-            <HintPath>lib\NBagOfTricks.dll</HintPath>
+        <Reference Include="Ephemera.NBagOfTricks">
+            <HintPath>lib\Ephemera.NBagOfTricks.dll</HintPath>
         </Reference>
     </ItemGroup>
 

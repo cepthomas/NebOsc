@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 
-namespace NebOsc
+namespace Ephemera.NebOsc
 {
     /// <summary>OSC has received something.</summary>
     public class InputEventArgs : EventArgs

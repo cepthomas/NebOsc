@@ -13,7 +13,7 @@ using System.Drawing;
 
 
 
-namespace NebOsc
+namespace Ephemera.NebOsc
 {
     /// <summary>
     /// Representation of an OSC Bundle. For doc see README.md.
