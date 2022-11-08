@@ -27,10 +27,10 @@ namespace Ephemera.NebOsc
 
         #region Events
         /// <summary>Request for logging service. May need Invoke() if client is UI.</summary>
-        public event EventHandler<LogEventArgs>? LogEvent;
+        public event EventHandler<NotificationEventArgs>? Notification;
 
         /// <summary>Reporting a change to listeners. May need Invoke() if client is UI.</summary>
-        public event EventHandler<InputEventArgs>? InputEvent;
+        public event EventHandler<InputReceiveEventArgs>? InputReceived;
         #endregion
 
         #region Properties
@@ -91,9 +91,9 @@ namespace Ephemera.NebOsc
             // Process input.
             byte[] bytes = _udpClient!.EndReceive(ar, ref sender);
 
-            if (InputEvent is not null && bytes is not null && bytes.Length > 0)
+            if (InputReceived is not null && bytes is not null && bytes.Length > 0)
             {
-                InputEventArgs args = new();
+                InputReceiveEventArgs args = new();
 
                 // Unpack - check for bundle or message.
                 if (bytes[0] == '#')
@@ -122,7 +122,7 @@ namespace Ephemera.NebOsc
                     }
                 }
 
-                InputEvent.Invoke(this, args);
+                InputReceived.Invoke(this, args);
             }
 
             // Listen again.
@@ -134,7 +134,7 @@ namespace Ephemera.NebOsc
         /// <param name="error"></param>
         void LogMsg(string msg, bool error = true)
         {
-            LogEvent?.Invoke(this, new LogEventArgs() { Message = msg, IsError = error });
+            Notification?.Invoke(this, new NotificationEventArgs() { Message = msg, IsError = error });
         }
         #endregion
     }

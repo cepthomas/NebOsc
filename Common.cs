@@ -7,14 +7,14 @@ using System.Text;
 namespace Ephemera.NebOsc
 {
     /// <summary>OSC has received something.</summary>
-    public class InputEventArgs : EventArgs
+    public class InputReceiveEventArgs : EventArgs
     {
         /// <summary>Received data.</summary>
         public List<Message> Messages { get; set; } = new List<Message>();
     }
 
     /// <summary>OSC wants to say something meta.</summary>
-    public class LogEventArgs : EventArgs
+    public class NotificationEventArgs : EventArgs
     {
         /// <summary>Category.</summary>
         public bool IsError { get; set; } = true;

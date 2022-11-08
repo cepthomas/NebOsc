@@ -182,9 +182,9 @@ namespace Ephemera.NebOsc.Test
                 Input nin = new(9700);
                 Output nout = new("127.0.0.1", 9700);
 
-                nin.InputEvent += (_, e) => rxMsgs.AddRange(e.Messages);
-                nin.LogEvent += (_, e) => logs.Add(e.Message);
-                nout.LogEvent += (_, e) => logs.Add(e.Message);
+                nin.InputReceived += (_, e) => rxMsgs.AddRange(e.Messages);
+                nin.Notification += (_, e) => logs.Add(e.Message);
+                nout.Notification += (_, e) => logs.Add(e.Message);
 
                 // Send some messages to myself.
                 Message m1 = new() { Address = "/foo/bar/" };

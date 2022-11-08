@@ -30,7 +30,7 @@ namespace Ephemera.NebOsc
 
         #region Events
         /// <inheritdoc />
-        public event EventHandler<LogEventArgs>? LogEvent;
+        public event EventHandler<NotificationEventArgs>? Notification;
         #endregion
 
         #region Properties
@@ -121,7 +121,7 @@ namespace Ephemera.NebOsc
         /// <param name="error"></param>
         void LogMsg(string msg, bool error = true)
         {
-            LogEvent?.Invoke(this, new LogEventArgs() { Message = msg, IsError = error });
+            Notification?.Invoke(this, new NotificationEventArgs() { Message = msg, IsError = error });
         }
     }
 }
