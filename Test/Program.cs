@@ -18,7 +18,8 @@ namespace Ephemera.NebOsc.Test
             TestRunner runner = new(OutputFormat.Readable);
             string[] cases = new string[] { "OSC" };
             runner.RunSuites(cases);
-            File.WriteAllLines(@"test_out.txt", runner.Context.OutputLines);
+            var fn = Path.Combine(MiscUtils.GetSourcePath(), "test_out.txt");
+            File.WriteAllLines(fn, runner.Context.OutputLines);
         }
 
         public class OSC_TimeTag : TestSuite
