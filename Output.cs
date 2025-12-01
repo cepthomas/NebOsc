@@ -42,9 +42,6 @@ namespace Ephemera.NebOsc
 
         /// <summary>Where to?</summary>
         public int RemotePort { get; init; } = -1;
-
-        /// <summary>Trace other than errors.</summary>
-        public bool Trace { get; set; } = false;
         #endregion
 
         #region Lifecycle

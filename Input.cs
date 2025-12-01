@@ -39,9 +39,6 @@ namespace Ephemera.NebOsc
 
         /// <summary>The receive port.</summary>
         public int LocalPort { get; init; } = -1;
-
-        /// <summary>Trace other than errors.</summary>
-        public bool Trace { get; set; } = false;
         #endregion
 
         #region Lifecycle
