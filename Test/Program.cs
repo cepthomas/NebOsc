@@ -169,14 +169,14 @@ namespace Ephemera.NebOsc.Test
         {
             public override void RunSuite()
             {
-                List<Message> rxMsgs = new();
+                List<Message> recvMsgs = new();
 
                 List<string> logs = new();
 
                 Input nin = new(9700);
                 Output nout = new("127.0.0.1", 9700);
 
-                nin.InputReceived += (_, e) => rxMsgs.AddRange(e.Messages);
+                nin.InputReceived += (_, e) => recvMsgs.AddRange(e.Messages);
                 nin.Notification += (_, e) => logs.Add(e.Message);
                 nout.Notification += (_, e) => logs.Add(e.Message);
 
@@ -195,7 +195,7 @@ namespace Ephemera.NebOsc.Test
                 // What happened.
                 Assert(logs.Count == 0);
                 logs.ForEach(l => Info(l));
-                Assert(rxMsgs.Count == 1);
+                Assert(recvMsgs.Count == 1);
             }
         }
     }
