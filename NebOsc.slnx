@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="NebOsc.csproj" />
+  <Project Path="Test/Test.csproj" />
+</Solution>

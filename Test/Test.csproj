@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net8.0-windows</TargetFramework>
+        <TargetFramework>net10.0-windows</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
         <AssemblyName>Ephemera.NebOsc.Test</AssemblyName>
         <Deterministic>False</Deterministic>
@@ -17,10 +17,6 @@
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     </PropertyGroup>
-
-    <ItemGroup>
-        <PackageReference Include="System.Drawing.Common" Version="10.0.0" />
-    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\NebOsc.csproj" />
